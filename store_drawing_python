@@ -1,0 +1,88 @@
+
+import tkinter as tk
+from PIL import Image, ImageDraw
+
+saved_files = []   # 저장된 파일 리스트
+
+CANVAS_WIDTH = 600
+CANVAS_HEIGHT = 400
+
+class PaintApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("그림 그리기 프로그램")
+
+        # ====== 저장할 장수 입력란 ======
+        frame = tk.Frame(root)
+        frame.pack(pady=5)
+
+        tk.Label(frame, text="몇 장 저장할까요?").pack(side="left")
+        self.num_entry = tk.Entry(frame, width=5)
+        self.num_entry.pack(side="left")
+        self.num_entry.insert(0, "1")
+
+        self.current_count = 0  # 현재까지 저장된 그림 수
+
+        # ====== 캔버스 만들기 ======
+        self.canvas = tk.Canvas(root, bg="white", width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
+        self.canvas.pack()
+
+        # ====== 실제 이미지 버퍼 만들기 (Pillow) ======
+        self.image = Image.new("RGB", (CANVAS_WIDTH, CANVAS_HEIGHT), "white")
+        self.draw = ImageDraw.Draw(self.image)
+
+        # ====== 그리기 이벤트 ======
+        self.last_x, self.last_y = None, None
+        self.canvas.bind("<ButtonPress-1>", self.start_draw)
+        self.canvas.bind("<B1-Motion>", self.draw_line)
+
+        # ====== 저장 버튼 ======
+        self.save_button = tk.Button(root, text="이 그림 저장하기", command=self.save_one_image)
+        self.save_button.pack(pady=10)
+
+    def reset_image(self):
+        """Pillow 이미지 버퍼도 초기화"""
+        self.image = Image.new("RGB", (CANVAS_WIDTH, CANVAS_HEIGHT), "white")
+        self.draw = ImageDraw.Draw(self.image)
+
+    def start_draw(self, event):
+        self.last_x, self.last_y = event.x, event.y
+
+    def draw_line(self, event):
+        # Tkinter 캔버스에 선 그리기
+        self.canvas.create_line(self.last_x, self.last_y, event.x, event.y, fill="black", width=3)
+
+        # Pillow 이미지에도 동일한 선 그리기
+        self.draw.line((self.last_x, self.last_y, event.x, event.y), fill="black", width=3)
+
+        self.last_x, self.last_y = event.x, event.y
+
+    def save_one_image(self):
+        total = int(self.num_entry.get())
+
+        if self.current_count >= total:
+            return
+
+        self.current_count += 1
+        filename = f"drawing_{self.current_count}.jpg"
+
+        # ====== 실제 이미지 저장 ======
+        self.image.save(filename, "JPEG")
+        saved_files.append(filename)
+        print(f"{filename} 저장 완료!")
+
+        # ====== 캔버스 & 이미지 초기화 ======
+        self.canvas.delete("all")
+        self.reset_image()
+
+        # ====== 종료 조건 ======
+        if self.current_count == total:
+            print("\n🎉 모든 그림 저장 완료!")
+            print("저장된 파일들:", saved_files)
+            self.root.destroy()   # 프로그램 종료
+
+
+# 실행
+root = tk.Tk()
+app = PaintApp(root)
+root.mainloop()
