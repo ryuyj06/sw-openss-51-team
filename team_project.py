@@ -14,19 +14,35 @@ class PaintGame:
         self.root = root
         self.root.title("드로잉 교육 게임")
 
+        # ============================================
+        #  표지 화면 추가 
+        # ============================================
+        self.cover_frame = tk.Frame(root, width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
+        self.cover_frame.pack()
+        self.cover_frame.pack_propagate(False)
+
+        cover_title = tk.Label(self.cover_frame, text="교육", font=("Arial", 48))
+        cover_title.pack(pady=80)
+
+        cover_button = tk.Button(self.cover_frame, text="시작", font=("Arial", 20),
+                                 command=self.start_game)
+        cover_button.pack(pady=20)
+
+        # 게임 화면을 담을 Frame (처음엔 숨김)
+        self.game_frame = tk.Frame(root)
+        # ============================================
+
         # 현재 제시어 인덱스
         self.current_prompt_index = 0
 
         # ====== 제시어 라벨 ======
-        self.prompt_label = tk.Label(root,
+        self.prompt_label = tk.Label(self.game_frame,
                                      text=f"제시어: {PROMPTS[self.current_prompt_index]}",
                                      font=("Arial", 18))
-        self.prompt_label.pack(pady=10)
 
         # ====== 캔버스 ======
-        self.canvas = tk.Canvas(root, bg="white",
+        self.canvas = tk.Canvas(self.game_frame, bg="white",
                                 width=CANVAS_WIDTH, height=CANVAS_HEIGHT)
-        self.canvas.pack(pady=5)
 
         # Pillow 이미지 버퍼
         self.image = Image.new("RGB", (CANVAS_WIDTH, CANVAS_HEIGHT), "white")
@@ -38,9 +54,22 @@ class PaintGame:
         self.canvas.bind("<B1-Motion>", self.draw_line)
 
         # ====== 채점 버튼 ======
-        self.check_button = tk.Button(root, text="채점하기", font=("Arial", 14),
+        self.check_button = tk.Button(self.game_frame, text="채점하기", font=("Arial", 14),
                                       command=self.check_answer)
+
+    # ============================================
+    # 🌟 표지 → 게임 화면으로 전환
+    # ============================================
+    def start_game(self):
+        self.cover_frame.pack_forget()  # 표지 숨기기
+
+        # 게임 UI 보여주기 (원본 코드 그대로)
+        self.prompt_label.pack(pady=10)
+        self.canvas.pack(pady=5)
         self.check_button.pack(pady=10)
+
+        self.game_frame.pack()
+    # ============================================
 
     # ----- 그림 그리기 시작 -----
     def start_draw(self, event):
@@ -95,3 +124,4 @@ class PaintGame:
 root = tk.Tk()
 app = PaintGame(root)
 root.mainloop()
+
