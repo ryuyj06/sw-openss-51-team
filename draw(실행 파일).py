@@ -1,10 +1,11 @@
 import tkinter as tk
 from tkinter import messagebox
-from PIL import Image, ImageDraw, ImageTk
-import pygame
+from PIL import Image, ImageDraw, ImageTk   # 설치 필요 - 설치 명령어 : pip install pillow
+import pygame                                # 설치 필요 - 설치 명령어 : pip install pygame
 import random
-import torch
-from transformers import CLIPProcessor, CLIPModel
+import torch                                 # 설치 필요 - 설치 명령어 : install torch
+from transformers import CLIPProcessor, CLIPModel   # 설치 필요- 설치 명령어 : pip install transformers
+
 
 # ====== 기본 설정 ======
 CANVAS_WIDTH = 900
