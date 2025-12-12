@@ -1,1 +1,0 @@
-# sw-openss-51-team
